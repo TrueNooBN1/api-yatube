@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +11,7 @@ from .permissions import IsAuthorOrReadOnly
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly, permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user) 
@@ -30,7 +30,10 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['get', 'put', 'patch', 'delete'], url_path='comments/(?P<comment_pk>[^/.]+)')
+    @action(detail=True,
+            methods=['get', 'put', 'patch', 'delete'],
+            url_path='comments/(?P<comment_pk>[^/.]+)',
+            permission_classes=[IsAuthorOrReadOnly, permissions.IsAuthenticated])
     def comment_detail(self, request, pk=None, comment_pk=None):
         post = self.get_object()
         try:
