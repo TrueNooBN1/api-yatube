@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Group
         fields = ('id', 'title', 'slug', 'description')
@@ -22,7 +22,7 @@ class PostSerializer(serializers.ModelSerializer):
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), required=False, allow_null=True
     )
- 
+
     class Meta:
         model = Post
         fields = ('id', 'text', 'pub_date', 'author', 'author_id',
